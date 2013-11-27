@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>WebRAT - A web based tool to query MySQL databases with relational algebra queries</title>
+	<link rel="stylesheet" type="text/css" href="styles/main.css">
+</head>
+
+<body background="images/background.png">
+<image src="images/logo.png"/ class="logo">
+<table class="interface">
+	<tr>
+		<td class="buttons">
+			<div title="Select" id="selectButton" class="operatorButton">σ</div>
+			<div title="Project" id="projectButton" class="operatorButton">π</div>
+			<div title="Union" id="unionButton" class="operatorButton">∪</div>
+			<div title="Intersection" id="intersectionButton" class="operatorButton">∩</div>
+			<div title="Cross" id="crossButton" class="operatorButton">×</div>
+			<div title="Subtract" id="subtractButton" class="operatorButton">−</div>
+			<div title="Join" id="joinButton" class="operatorButton">⋈</div>
+			<div title="Theta Join" id="thetaJoinButton" class="operatorButton">⋈_</div>
+			<div title="Full Outer Join" id="fullOuterJoinButton" class="operatorButton">⟗</div>
+			<div title="Theta Outer Join" id="thetaOuterJoinButton" class="operatorButton">⟗_</div>
+			<div title="Right Outer Join" id="rightOuterJoinButton" class="operatorButton">⟖</div>
+			<div title="Theta Right Outer Join" id="thetaRightOuterJoinButton" class="operatorButton">⟖_</div>
+			<div title="Left Outer Join" id="leftOuterJoinButton" class="operatorButton">⟕</div>
+			<div title="Theta Left Outer Join" id="thetaLeftOuterJoinButton" class="operatorButton">⟕_</div>
+			<div title="Rename" id="renameButton" class="operatorButton">ρ</div>
+			<div title="Assign" id="assignButton" class="operatorButton">←</div>
+		</td>
+		<td class="queryEntry">
+			<textarea class="queryEntryTextArea">INPUT GOES HERE</textarea>
+		</td>
+		<td class="relationsContainer">
+			<div class="relations">Relations Go Here</div>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3">
+			<div class="console">OUTPUT GOES HERE</div>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
