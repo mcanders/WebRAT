@@ -1,8 +1,9 @@
 .buttons {
-	width: 16%;
-	height:350px;
-	padding-left: 2px;
-	padding-right: 2px;
+	display: inline-block;
+	clear: left;
+	float:left;
+	width: 97px;
+	height:360px;
 	border-radius: 10px;
 	border-style: solid;
 	border-color: black;
@@ -13,26 +14,39 @@
 	-ms-user-select: none; /* IE10+ */
 }
 .console {
-	width: 98%;
+	display: inline-block;
+	float:left;
 	height: 235px;
 	padding: 5px;
 	border-radius: 10px;
 	border-style: solid;
 	border-color: black;
 	border-width: 2px;
+	margin-top: 5px; 
 	background-color: white;
 }
-.interface {
-	position:relative;
-	display: block;
-	width: 600px;
-	height: 600px;
-	margin-left: auto;
-	margin-right: auto;
-/*	border-style: solid;
+.menu {
+	display: inline-block;
+	float:left;
+	height: 28px;
+	padding: 5px;
+	border-radius: 10px;
+	border-style: solid;
 	border-color: black;
-	border-width: 1px;*/
-	top:30px;
+	border-width: 2px;
+	margin-bottom: 5px; 
+	background-color: white;
+}
+.menuButton {
+	display: inline-block;
+	float:left;
+	height: 15px;
+	padding: 5px;
+	border-radius: 10px;
+	border-style: solid;
+	border-color: black;
+	border-width: 2px;
+	background-color: white;
 }
 .logo {
 	position:relative;
@@ -42,6 +56,7 @@
 	margin-right: auto;
 	width:250px;
 	height: auto;
+	z-index: -1;
 }
 .operatorButton {
 	position:relative;
@@ -55,7 +70,8 @@
 	border-width: 2px;
 	text-align: center;
 	font-size: 1.5em;
-	margin-bottom: 5px;
+	margin-top: 5px;
+	margin-left: 5px;
 	vertical-align: middle;
 	-webkit-user-select: none; /* Chrome/Safari */        
 	-moz-user-select: none; /* Firefox */
@@ -66,39 +82,61 @@
 .operatorButton:active {
 	background-color: rgb(200,200,200);
 }
-.queryEntry {
+.queryEditor {
+	display: inline-block;
+	float: left;
 	border-radius: 10px;
 	border-style: solid;
 	border-color: black;
 	border-width: 2px;
 	background-color: white;
-	width: 65%;
-	height:350px;
+	margin-left: 5px;
+	margin-right: 5px;
+	width: 100px;
+	height:360px;
 
 }
-.queryEntryTextArea {
-	width: 98%;
-	height: 100%;
-	padding: 5px;
-	background-color: rgba(0,0,0,0);
-	border:none;
-	resize:none;
+.queryEditorCondition {
+	display: inline-block;
+	position: relative;
+	font-size: 0.8em;
+	top: 5px;
+	padding:2px;
 }
-.queryEntryTextArea:focus {
-    outline-width: 0;	
+.queryEditorExpression {
+	display: inline-block;	
+}
+.queryEditorOperator {
+	display: inline-block;
+	font-size: 1.2em;
+	color: blue;
+	padding:5px;
+}
+.queryEditorParenthesis {
+	display: inline-block;
+	font-size: 1.5em;
+	color: black;
+}
+.queryEditorParenthesisSelected {
+	display: inline-block;
+	font-size: 1.5em;
+	color: red;
+}
+.queryEditorRelation {
+	display: inline-block;
+	font-size: 1.2em;
+	padding:5px;
 }
 .relations {
+	display: inline-block;
+	float: left;
 	overflow: hidden;
-
-	padding: 5px;
-	width: 100px;
-	height:350px;
-}
-.relationsContainer {
 	border-radius: 10px;
 	border-style: solid;
 	border-color: black;
 	border-width: 2px;
 	background-color: white;
 	height:350px;
+	padding: 5px;
+	width: 100px;
 }
