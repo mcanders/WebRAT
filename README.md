@@ -1,4 +1,4 @@
-![alt tag](https://raw.github.com/mcanders/WebRAT/master/frontend/images/logo.png
+![alt tag](https://raw.github.com/mcanders/WebRAT/master/frontend/images/logo.png)
 
 WebRAT
 ======
