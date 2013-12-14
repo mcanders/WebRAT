@@ -5,11 +5,16 @@ var cl = function(text) {
 
 var currentBlock = null;
 var currentParent = null;
-
+var connectionAddress = null;
+var connectionPort = null;
+var connectionDatabase = null;
+var connectionUser = null;
+var connectionPassword = null;
 function init() {
 	var queryEditor = document.getElementById("queryEditor");
 	var baseNode = document.createElement('div');
 	queryEditor.appendChild(baseNode);
+	queryEditor.children[0].isLeaf = true;
 
 	currentParent = queryEditor;
 	currentBlock = queryEditor.children[0];
@@ -28,6 +33,7 @@ function init() {
 	var thetaRightOuterJoinButton = document.getElementById("thetaRightOuterJoinButton");
 	var leftOuterJoinButton = document.getElementById("leftOuterJoinButton");
 	var thetaLeftOuterJoinButton = document.getElementById("thetaLeftOuterJoinButton");
+	var assignButton = document.getElementById("assignButton");
 
 	selectButton.onclick = function(){addOperatorConditionRelation("σ", selectToSQL)};
 	projectButton.onclick = function(){addOperatorConditionRelation("π", projectToSQL, "columnNames")};
@@ -43,21 +49,45 @@ function init() {
 	thetaRightOuterJoinButton.onclick = function(){addRelationOperatorConditionRelation("⟕", thetaRightOuterJoinToSQL)};
 	leftOuterJoinButton.onclick = function(){addRelationOperatorRelation("⟕", leftOuterJoinToSQL)};
 	thetaLeftOuterJoinButton.onclick = function(){addRelationOperatorConditionRelation("⟕", thetaLeftOuterJoinToSQL)};
-
+	assignButton.onclick = function(){addRelationOperatorRelation("←", assignToSQL)};
 	// setOutput(queryEditor.children[0].toSQL());
 
+	document.onkeydown = function(e) {
+		if(e.keyCode == "13") {
+			var textEditor = document.getElementById("textEditor");
+			var textEditorInput = document.getElementById("textEditorInput");
+			textEditor.textDiv.textContent = textEditorInput.value;
+			textEditor.style.display = "none";
+		}
+		else if(e.keyCode == "8") {
+			if(!currentBlock.isLeaf) {
+				for(var child in currentParent.children) {
+					if(currentParent.children[child] == currentBlock) {
+						var newRelation = createRelation("Relation", currentParent);
+						currentParent.replaceChild(newRelation, currentParent.children[child])
+						currentBlock = newRelation;
+					}
+				}
+			}
+		}
+	}
+
+
 	queryEditor.onclick = function() {
-		if(currentBlock != null) {
+		if(currentBlock != null && currentBlock.deselect != undefined) {
 			currentBlock.deselect();		
 			currentBlock = null;	
 		}
 		if(document.getElementById("textEditor").style.display == "block") {
 			document.getElementById("textEditor").style.display="none";
 		}
+		if(document.getElementById("connectWindow").style.display == "block") {
+			document.getElementById("connectWindow").style.display="none";
+		}
 	}
 	window.onresize = function() {
 		document.getElementById("queryEditor").style.width = "" + 
-			(window.innerWidth-260)+"px";
+			(window.innerWidth-300)+"px";
 		document.getElementById("console").style.width = "" + 
 			(window.innerWidth-45)+"px";
 		document.getElementById("menu").style.width = "" + 
@@ -65,53 +95,151 @@ function init() {
 	}
 	window.onresize();
 }
+function showConnectWindow() {
+	var connectWindow = document.getElementById("connectWindow");
+	connectWindow.style.display = "block";
+}
+function connectToDB() {
+	var address = document.getElementById("connectWindowAddress").value;
+	var port = document.getElementById("connectWindowPort").value;
+	var user = document.getElementById("connectWindowUser").value;
+	var password = document.getElementById("connectWindowPassword").value;
+	var database = document.getElementById("connectWindowDatabase").value;
+
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", "/Connect", true);
+	xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xhr.send("address="+address+"&port="+port+"&user="+user+"&password="+password+"&database="+database);
+	xhr.onreadystatechange = function(){
+		if (this.readyState == 4) {
+		    if (this.status == 200){
+	    		var connectWindowButton = document.getElementById("connectWindowButton");
+		    	if(this.responseText == "failure") {
+		    		connectWindowButton.style.backgroundColor = "red";
+		    		connectWindowButton.textContent = "Failed";
+		    	}
+		    	else {
+		    		connectionAddress = address;
+		    		connectionPort = port;
+		    		connectionDatabase = database;
+		    		connectionUser = user;
+		    		connectionPassword = password;
+		    		connectWindowButton.style.backgroundColor = "green";		    		
+		    		connectWindowButton.textContent = "Success";
+		    		var tables = JSON.parse(this.responseText);
+		    		// console.log(tables);
+		    		var currentTable = null;
+		    		for(var i = 0; i < tables.length; i++) {
+		    			var entry = tables[i];
+		    			if(entry.TABLE_NAME != currentTable) {
+		    				addTable(entry.TABLE_NAME);
+		    				currentTable = entry.TABLE_NAME;
+		    			}
+		    			addColumn(entry.DATA_TYPE + " " +entry.COLUMN_NAME);
+		    		}
+		    	}
+		    }
+		    else {
+		        console.log("XMLHttpRequest error: " + xhr.status);
+		    }
+		} 
+	};
+}
+function addTable(name) {
+	var relations = document.getElementById("relations");
+	var newTable = document.createElement('div');
+	newTable.className = "relationTable";
+	newTable.textContent = name;
+	relations.appendChild(newTable);
+}
+function addColumn(name) {
+	var relations = document.getElementById("relations");
+	var newColumn = document.createElement('div');
+	newColumn.className = "relationColumn";
+	newColumn.textContent = name;
+	relations.appendChild(newColumn);
+}
+function runQuery(SQL) {
+	if(connectionAddress == null) {
+		setOutput("Could Not Execute Query: Not Connected To A Database");
+	}
+	else {
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", "/Query", true);
+		xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhr.send("address="+connectionAddress+"&port="+connectionPort+"&user="
+			+connectionUser+"&password="+connectionPassword+"&database="
+			+connectionDatabase+"&query="+SQL);
+		xhr.onreadystatechange = function(){
+			if (this.readyState == 4) {
+			    if (this.status == 200){
+			    	var rows = JSON.parse(this.responseText);
+			    	setOutputTable(rows);
+			    }
+			    else {
+			        console.log("XMLHttpRequest error: " + xhr.status);
+			    }
+			} 
+		};
+	}
+}
 function SQLConvert() {
 	var queryEditor = document.getElementById("queryEditor");
 	var sqlText = queryEditor.children[0].toSQL();
 	return sqlText.substring(1,sqlText.length-1);
 }
 function setOutput(text) {
-	document.getElementById("console").textContent = text;
+	var consoleDiv = document.getElementById("console");
+	consoleDiv.innerHTML = ""
+	consoleDiv.textContent = text;
+}
+function setOutputTable(rows) {
+	var consoleDiv = document.getElementById("console");
+	var table = document.createElement('table');
+	table.className = "outputTable";
+	var tr = table.insertRow(-1);
+	for(var column in rows[0]) {
+		var td = tr.insertCell(-1);
+		td.className = "outputTableCell";
+		td.appendChild(document.createTextNode(column))
+	}
+	for(var rowIndex in rows) {
+		var row = rows[rowIndex];
+		var tr = table.insertRow(-1);
+		for(var column in row) {
+			var td = tr.insertCell(-1);
+			td.className = "outputTableCell";
+			td.appendChild(document.createTextNode(row[column]))
+		}
+	}
+	consoleDiv.innerHTML = "";
+	consoleDiv.appendChild(table);
 }
 function displayTextEditor(x, y, text, textDiv) {
 	var textEditor = document.getElementById("textEditor");
-	var textEditorTextArea = document.getElementById("textEditorTextArea");
+	var textEditorInput = document.getElementById("textEditorInput");
 	var textEditorDone = document.getElementById("textEditorDone");
 	textEditor.style.display = "block";
 	textEditor.style.top = "" + y + "px";
 	textEditor.style.left = "" + x + "px";
-	textEditorTextArea.value = text;
+	textEditorInput.value = text;
 	textEditor.textDiv = textDiv;
+	textEditorInput.focus(); 
+
 	textEditorDone.onclick = function() {
 		var textEditor = document.getElementById("textEditor");
-		var textEditorTextArea = document.getElementById("textEditorTextArea");
-		textEditor.textDiv.textContent = textEditorTextArea.value;
+		var textEditorInput = document.getElementById("textEditorInput");
+		textEditor.textDiv.textContent = textEditorInput.value;
 		textEditor.style.display = "none";
 	}
 }
-function loadRelationalAlgebraJSON() {
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET", "relationalAlgebra.json", true);
-	xhr.send();
-	xhr.onreadystatechange = function(){
-		if (this.readyState == 4) {
-		    if (this.status == 200){
-		    	var relationalAlgebra = JSON.parse(this.responseText);
-		    	cl(relationalAlgebra["test"]);
-		    }
-		    else {
-		        console.log("XMLHttpRequest error: " + xhr.status); 
-		      } 
-		    } 
-	};
-}
 
-
-
-function createOperator(text) {
+function createOperator(text, parent) {
 	var operator = document.createElement('div');
 	operator.innerHTML = text;
 	operator.className = "queryEditorOperator";
+
+	operator.theParent = parent;
 
 	operator.onclick = function(e) {
 		if(currentBlock != null) {
@@ -129,7 +257,7 @@ function createOperator(text) {
 	return operator;
 }
 
-function createRelation(text) {
+function createRelation(text, parent) {
 	var relation = document.createElement('div');
 	relation.isLeaf = true;
 	relation.className = "queryEditorRelation";
@@ -137,6 +265,7 @@ function createRelation(text) {
 	relationText.innerHTML = text;
 	relationText.className = "queryEditorRelationText";
 
+	relation.theParent = parent;
 	relation.leafText = relationText;
 	relation.leftParenthesis = createParenthesis(relation, "left");
 	relation.rightParenthesis = createParenthesis(relation, "right");
@@ -167,12 +296,12 @@ function createRelation(text) {
 	return relation;
 }
 
-function createCondition(text) {
+function createCondition(text, parent) {
 	var condition = document.createElement('div');
 	condition.innerHTML = text;
 	condition.className = "queryEditorCondition";
 	condition.isLeaf = true;
-
+	condition.theParent = parent;
 	condition.toSQL = function() {
 		return this.textContent;
 	}
@@ -228,14 +357,14 @@ function createParenthesis(child, orientation) {
 function addOperatorConditionRelation(operator, toSQL, conditionName) {
 	var expression = document.createElement('div');
 	expression.className = "queryEditorExpression";
-	expression.operator = createOperator(operator);
+	expression.operator = createOperator(operator, expression);
 	if(conditionName != undefined) {
 		expression.condition = createCondition(conditionName);
 	}
 	else {
-		expression.condition = createCondition("condition");
+		expression.condition = createCondition("condition", expression);
 	}
-	expression.relation = createRelation("Relation");
+	expression.relation = createRelation("Relation", expression);
 	expression.leftParenthesis = createParenthesis(expression, "left");
 	expression.rightParenthesis = createParenthesis(expression, "right");
 
@@ -244,10 +373,6 @@ function addOperatorConditionRelation(operator, toSQL, conditionName) {
 	expression.appendChild(expression.condition);
 	expression.appendChild(expression.relation);
 	expression.appendChild(expression.rightParenthesis);
-
-	expression.relation.theParent = expression;
-	expression.condition.theParent = expression;
-	expression.operator.theParent = expression;
 
 	expression.theParent = currentParent;
 
@@ -267,9 +392,9 @@ function addOperatorConditionRelation(operator, toSQL, conditionName) {
 function addRelationOperatorRelation(operator, toSQL) {
 	var expression = document.createElement('div');
 	expression.className = "queryEditorExpression";
-	expression.operator = createOperator(operator);
-	expression.relation1 = createRelation("Relation1");
-	expression.relation2 = createRelation("Relation2");
+	expression.operator = createOperator(operator, expression);
+	expression.relation1 = createRelation("Relation1", expression);
+	expression.relation2 = createRelation("Relation2", expression);
 	expression.leftParenthesis = createParenthesis(expression, "left");
 	expression.rightParenthesis = createParenthesis(expression, "right");
 
@@ -278,10 +403,6 @@ function addRelationOperatorRelation(operator, toSQL) {
 	expression.appendChild(expression.operator);
 	expression.appendChild(expression.relation2);
 	expression.appendChild(expression.rightParenthesis);
-
-	expression.relation1.theParent = expression;
-	expression.relation2.theParent = expression;
-	expression.operator.theParent = expression;
 
 	expression.theParent = currentParent;
 	expression.toSQL = toSQL;
@@ -300,10 +421,10 @@ function addRelationOperatorRelation(operator, toSQL) {
 function addRelationOperatorConditionRelation(operator, toSQL) {
 	var expression = document.createElement('div');
 	expression.className = "queryEditorExpression";
-	expression.operator = createOperator(operator);
-	expression.relation1 = createRelation("Relation1");
-	expression.relation2 = createRelation("Relation2");
-	expression.condition = createCondition("condition");
+	expression.operator = createOperator(operator, expression);
+	expression.relation1 = createRelation("Relation1", expression);
+	expression.relation2 = createRelation("Relation2", expression);
+	expression.condition = createCondition("condition", expression);
 	expression.leftParenthesis = createParenthesis(expression, "left");
 	expression.rightParenthesis = createParenthesis(expression, "right");
 
@@ -313,11 +434,6 @@ function addRelationOperatorConditionRelation(operator, toSQL) {
 	expression.appendChild(expression.condition);
 	expression.appendChild(expression.relation2);
 	expression.appendChild(expression.rightParenthesis);
-
-	expression.relation1.theParent = expression;
-	expression.relation2.theParent = expression;
-	expression.operator.theParent = expression;
-	expression.condition.theParent = expression;
 
 	expression.theParent = currentParent;
 	expression.toSQL = toSQL;
@@ -389,4 +505,8 @@ function leftOuterJoinToSQL() {
 function thetaLeftOuterJoinToSQL() {
 	return "(SELECT * FROM " + this.children[1].toSQL() + " LEFT JOIN " + 
 		this.children[4].toSQL() + " ON " + this.children[3].toSQL() +")";
+}
+function assignToSQL() {
+	return "(CREATE TABLE " + this.children[1].toSQL() + " AS SELECT * FROM " + 
+		this.children[3].toSQL()+")";
 }

@@ -9,7 +9,9 @@
 <body background="images/background.png" onload="init()">
 	<image src="images/logo.png" class="logo">
 	<div id="menu" class="menu">
-		<div onclick="setOutput(SQLConvert())" id="SQLButton" class="menuButton">SQl</div>
+		<div title="Connect To MySQL Database" onclick="showConnectWindow()" id="SQLButton" class="menuButton">Connect</div>
+		<div title="Parse" onclick="setOutput(SQLConvert())" id="SQLButton" class="menuButton">SQl</div>
+		<div title="Run The Query" onclick="runQuery(SQLConvert())" id="runQuery" class="menuButton">Run</div>
 	</div>
 	<div class="buttons">
 		<div title="Select" id="selectButton" class="operatorButton">σ</div>
@@ -26,15 +28,30 @@
 		<div title="Theta Right Outer Join" id="thetaRightOuterJoinButton" class="operatorButton">⟖_</div>
 		<div title="Left Outer Join" id="leftOuterJoinButton" class="operatorButton">⟕</div>
 		<div title="Theta Left Outer Join" id="thetaLeftOuterJoinButton" class="operatorButton">⟕_</div>
-		<div title="Rename" id="renameButton" class="operatorButton">ρ</div>
 		<div title="Assign" id="assignButton" class="operatorButton">←</div>
 	</div>
 	<div id="textEditor" class="textEditor">
-		<textarea id="textEditorTextArea" class="textEditorTextArea"></textarea>
+		<input id="textEditorInput" class="textEditorInput"></input>
 		<div id="textEditorDone" class="textEditorButton">Done</div>
 	</div>
+	<div id="connectWindow" class="connectWindow">
+		<div class="connectWindowTitle">Connect To Database</div>
+		<div class="connectWindowCategory">Address</div>
+		<input id="connectWindowAddress" class="connectWindowInput" value="trailmixx.com"></input><br>
+		<div class="connectWindowCategory">Port</div>
+		<input id="connectWindowPort" class="connectWindowInput" value="3306"></input>
+		<div class="connectWindowCategory">Database</div>
+		<input id="connectWindowDatabase" class="connectWindowInput" value="trailmixx"></input>
+		<div class="connectWindowCategory">User</div>
+		<input id="connectWindowUser" class="connectWindowInput" value="root"></input>
+		<div class="connectWindowCategory">Password</div>
+		<input type="password" id="connectWindowPassword" class="connectWindowInput" value="yeezus"></input>
+		<div id="connectWindowButton" class="connectWindowButton" onclick="connectToDB()">Connect</div> 
+	</div>
 	<div id="queryEditor" class="queryEditor"></div>
-	<div class="relations">Relations Go Here</div>
+	<div class="relations">
+		<div id="relations"class="relationsContainer"></div>
+	</div>
 	<div id="console" class="console">OUTPUT GOES HERE</div>
 </body>
 </html>
