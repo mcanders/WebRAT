@@ -13,7 +13,15 @@
 	-moz-user-select: none; /* Firefox */
 	-ms-user-select: none; /* IE10+ */
 }
-.console {
+.outputTable {
+	padding:none;
+	border-radius: 10px;
+	border-style: solid;
+	border-color: black;
+	border-width: 2px;
+	border-spacing: 0px;
+}
+.consoleOutput {
 	display: inline-block;
 	float:left;
 	/*height: 235px;*/
@@ -27,13 +35,24 @@
 	background-color: white;
 	overflow-left:scroll;
 }
-.outputTable {
-	padding:none;
+.consoleSQL {
+	display: inline-block;
+	float:left;
+	/*height: 235px;*/
+	padding: 5px;
+	/*padding-bottom: 100px;*/
 	border-radius: 10px;
 	border-style: solid;
 	border-color: black;
 	border-width: 2px;
-	border-spacing: 0px;
+	margin-top: 5px; 
+	background-color: white;
+	overflow-left:scroll;
+	resize:none;
+
+}
+.consoleSQL:focus { 
+    outline: none; 
 }
 .outputTableCell {
 	padding: none;
@@ -59,6 +78,7 @@
 .menuButton {
 	display: inline-block;
 	float:left;
+	cursor: pointer;
 	height: 15px;
 	padding: 5px;
 	border-radius: 10px;
@@ -81,6 +101,7 @@
 .operatorButton {
 	position:relative;
 	display: inline-block;
+	cursor: pointer;
 	background-color: white;
 	width: 35px;
 	height: 35px;
@@ -128,9 +149,11 @@
 }
 .queryEditorOperator {
 	display: inline-block;
+	position: relative;
 	font-size: 1.2em;
 	color: blue;
 	padding:5px;
+	top:5px;
 }
 .queryEditorParenthesis {
 	display: inline-block;
@@ -165,6 +188,8 @@
 .relationsContainer {
 	overflow: auto;
 	padding: 5px;
+	padding-top: 0px;
+	padding-bottom: 0px;
 	width: 100%;
 	height: 100%;
 	padding-right: 15px;
@@ -271,4 +296,19 @@
 	box-shadow: 0px 0px 10px rgba(0,0,0,.5);}
 .connectWindowButton:active {
 	background-color: rgb(200,200,200);
+}
+.helpWindow {
+	position: absolute;
+	display: none;
+	background-color: white;
+	border-radius: 10px;
+	border-style: solid;
+	border-color: black;
+	width:300px;
+	left:50%;
+	top: 220px;
+	margin-left: -125px;
+	border-width: 2px;
+	padding: 5px;
+	z-index: 5;
 }

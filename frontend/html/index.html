@@ -10,25 +10,28 @@
 	<image src="images/logo.png" class="logo">
 	<div id="menu" class="menu">
 		<div title="Connect To MySQL Database" onclick="showConnectWindow()" id="SQLButton" class="menuButton">Connect</div>
-		<div title="Parse" onclick="setOutput(SQLConvert())" id="SQLButton" class="menuButton">SQl</div>
-		<div title="Run The Query" onclick="runQuery(SQLConvert())" id="runQuery" class="menuButton">Run</div>
+		<div title="Parse" onclick="setConsoleSQL(SQLConvert())" id="SQLButton" class="menuButton">To SQL</div>
+		<div title="Run The Query" onclick="runQuery()" id="runQuery" class="menuButton">Run SQL</div>
+		<div title="Clear SQL Editor" onclick="clearConsoleSQL('')" class="menuButton">Clear SQL</div>
+		<div title="Help" onclick="showHelp()" class="menuButton">Help</div>
 	</div>
 	<div class="buttons">
-		<div title="Select" id="selectButton" class="operatorButton">σ</div>
-		<div title="Project" id="projectButton" class="operatorButton">π</div>
-		<div title="Union" id="unionButton" class="operatorButton">∪</div>
-		<div title="Intersection" id="intersectButton" class="operatorButton">∩</div>
-		<div title="Cross" id="crossButton" class="operatorButton">×</div>
-		<div title="Subtract" id="subtractButton" class="operatorButton">−</div>
-		<div title="Join" id="joinButton" class="operatorButton">⋈</div>
-		<div title="Theta Join" id="thetaJoinButton" class="operatorButton">⋈_</div>
-		<div title="Full Outer Join" id="fullOuterJoinButton" class="operatorButton">⟗</div>
-		<div title="Theta Outer Join" id="thetaOuterJoinButton" class="operatorButton">⟗_</div>
-		<div title="Right Outer Join" id="rightOuterJoinButton" class="operatorButton">⟖</div>
-		<div title="Theta Right Outer Join" id="thetaRightOuterJoinButton" class="operatorButton">⟖_</div>
-		<div title="Left Outer Join" id="leftOuterJoinButton" class="operatorButton">⟕</div>
-		<div title="Theta Left Outer Join" id="thetaLeftOuterJoinButton" class="operatorButton">⟕_</div>
-		<div title="Assign" id="assignButton" class="operatorButton">←</div>
+		<div title="Select" id="selectButton" class="operatorButton"></div>
+		<div title="Project" id="projectButton" class="operatorButton"></div>
+		<div title="Union" id="unionButton" class="operatorButton"></div>
+		<div title="Intersection" id="intersectButton" class="operatorButton"></div>
+		<div title="Cross" id="crossButton" class="operatorButton"></div>
+		<div title="Subtract" id="subtractButton" class="operatorButton"></div>
+		<div title="Join" id="joinButton" class="operatorButton"></div>
+		<div title="Theta Join" id="thetaJoinButton" class="operatorButton"></div>
+		<div title="Full Outer Join" id="fullOuterJoinButton" class="operatorButton"></div>
+		<div title="Theta Outer Join" id="thetaOuterJoinButton" class="operatorButton"></div>
+		<div title="Right Outer Join" id="rightOuterJoinButton" class="operatorButton"></div>
+		<div title="Theta Right Outer Join" id="thetaRightOuterJoinButton" class="operatorButton"></div>
+		<div title="Left Outer Join" id="leftOuterJoinButton" class="operatorButton"></div>
+		<div title="Theta Left Outer Join" id="thetaLeftOuterJoinButton" class="operatorButton"></div>
+		<div title="Assign" id="assignButton" class="operatorButton"></div>
+		<div title="Relation" id="relationButton" class="operatorButton"></div>
 	</div>
 	<div id="textEditor" class="textEditor">
 		<input id="textEditorInput" class="textEditorInput"></input>
@@ -48,10 +51,22 @@
 		<input type="password" id="connectWindowPassword" class="connectWindowInput" value="yeezus"></input>
 		<div id="connectWindowButton" class="connectWindowButton" onclick="connectToDB()">Connect</div> 
 	</div>
+	<div id="helpWindow" class="helpWindow">
+		<div style="font-weight:bold;font-size:1.5em;text-align:center;">About</div>
+		<div style="text-align:center;">WebRAT is a web based tool that converts relational algebra queries to SQL and optionally queries a MySQL database.</div><br>
+		<div style="font-weight:bold;font-size:1.5em;text-align:center;">Instructions</div>
+		<ul style="">
+		<li>Press a relational operator button to add it to the relational algebra editor.  Each expression is surrounded by parentheses.  Click an expression's parentheses to select it.  A selected expression can be replaced by clicking a relational operator button.  </li>
+		<li>Pressing the "To SQL" button converts the relational algebra in the editor to SQL.  The output will appear in the SQL editor.</li>
+		<li>To run a SQL query on a database, press the "Connect" button and fill out the form.  Once connected, select the query in the SQL editor that you want to run, then press "Run SQL".  The output will be displayed in the box below the SQL editor.</li>
+		</ul>
+		<div class="connectWindowButton" onclick="hideHelp()">Close</div>
+	</div>
 	<div id="queryEditor" class="queryEditor"></div>
 	<div class="relations">
 		<div id="relations"class="relationsContainer"></div>
 	</div>
-	<div id="console" class="console">OUTPUT GOES HERE</div>
+	<textarea id="consoleSQL" rows="8" class="consoleSQL"></textarea><br>
+	<div id="consoleOutput" class="consoleOutput"></div>
 </body>
 </html>

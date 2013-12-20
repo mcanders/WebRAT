@@ -69,8 +69,8 @@ app.post('/Query', function(req, res){
 		else {
 			connection.query(query, function(err, rows) {
 				if(err) {
-					console.log(err);
-					res.send("failure");
+					console.log(err.message);
+					res.send(JSON.stringify(err.message));
 				}
 				else {
 					res.send(JSON.stringify(rows));
